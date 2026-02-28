@@ -429,81 +429,27 @@ def add_item_by_id(facility_id: str) -> None:
 
 # ===== UI drawing =====
 def draw_vertical_timeline(events: list[dict]) -> None:
-    st.markdown(
-        """
-        <style>
-        .vt-wrap { position: relative; margin-left: 6px; }
-        .vt-item { position: relative; padding-left: 54px; padding-bottom: 18px; }
-        .vt-item:last-child { padding-bottom: 4px; }
-        .vt-item::before {
-            content: '';
-            position: absolute;
-            left: 17px;
-            top: 0;
-            bottom: -6px;
-            width: 2px;
-            background: #d9d9d9;
-        }
-        .vt-dot {
-            position: absolute;
-            left: 6px;
-            top: 2px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #ffffff;
-            border: 2px solid #2a9fa9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            z-index: 2;
-        }
-        .vt-card {
-            border: 1px solid #e7e7e7;
-            border-radius: 12px;
-            padding: 10px 12px;
-            background: #ffffff;
-        }
-        .vt-time {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 4px;
-        }
-        .vt-title {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        .vt-cat {
-            font-size: 12px;
-            color: #2a9fa9;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    html_parts = ["<div class='vt-wrap'>"]
-    for event in events:
+    for idx, event in enumerate(events, start=1):
         start = event["start"].strftime("%H:%M")
         end = event["end"].strftime("%H:%M")
         icon = event_icon(event["type"])
 
-        html_parts.append(
-            f"""
-            <div class='vt-item'>
-                <div class='vt-dot'>{icon}</div>
-                <div class='vt-card'>
-                    <div class='vt-time'>{start} - {end}</div>
-                    <div class='vt-title'>{event['title']}</div>
-                    <div class='vt-cat'>{event['category']}</div>
+        line_cols = st.columns([0.7, 9.3])
+        with line_cols[0]:
+            st.markdown(f"### {icon}")
+            if idx < len(events):
+                st.markdown("<div style='text-align:center;color:#c9c9c9;'>│</div>", unsafe_allow_html=True)
+        with line_cols[1]:
+            st.markdown(
+                f"""
+                <div style='border:1px solid #e7e7e7;border-radius:12px;padding:10px 12px;background:#ffffff;margin-bottom:10px;'>
+                    <div style='font-size:12px;color:#666;'>{start} - {end}</div>
+                    <div style='font-weight:600;'>{idx}. {event['title']}</div>
+                    <div style='font-size:12px;color:#2a9fa9;'>{event['category']}</div>
                 </div>
-            </div>
-            """
-        )
-    html_parts.append("</div>")
-
-    st.markdown("".join(html_parts), unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True,
+            )
 
 
 def draw_timeline_and_summary() -> None:
